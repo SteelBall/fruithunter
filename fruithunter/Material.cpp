@@ -131,7 +131,7 @@ void Material::bind(int materialBufferIndex, int resourceBufferIndex) {
 	// bind material buffer
 	deviceContext->PSSetConstantBuffers(materialBufferIndex, 1, m_materialBuffer.GetAddressOf());
 	// update buffer
-	deviceContext->UpdateSubresource(m_materialBuffer.Get(), 0, 0, &m_data, 0, 0);
+	updateMaterialBuffer();
 	// bind texture maps
 	for (int i = 0; i < 3; i++) {
 		if(m_maps[i].Get() != nullptr)deviceContext->PSSetShaderResources(resourceBufferIndex + i, 1, m_maps[i].GetAddressOf());
