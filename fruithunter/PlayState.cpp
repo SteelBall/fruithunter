@@ -12,7 +12,7 @@ using Vector4 = DirectX::SimpleMath::Vector4;
 void PlayState::initialize() {
 	m_name = "Play State";
 
-	m_terrain.initilize("heightmap1.png", XMINT2(50, 50), XMINT2(10, 10));
+	m_terrain.initilize("heightmap1.png", XMINT2(50,50), XMINT2(10,10));
 	m_terrain.setScale(float3(1, 0.25, 1) * 25);
 
 	m_entity.load("sphere");
@@ -54,8 +54,8 @@ void PlayState::draw() {
 
 	m_terrain.draw();
 
-	float3 p = m_player.getPosition();
-	float3 d = m_player.getForward() * 10;
+	float3 p = m_player.getPosition()+float3(0,0,0);
+	float3 d = m_player.getForward() * 15;
 	m_entity.setPosition(p + d);
 	m_entity.draw();
 	m_terrain.castRay(p, d);

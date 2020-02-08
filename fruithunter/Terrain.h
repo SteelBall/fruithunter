@@ -10,22 +10,15 @@ private:
 		vector<Vertex> m_vertices;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexBuffer;
 
-	public:
-		void initilize(
-			XMINT2 tileSize, vector<vector<float>>& map, vector<vector<float3>>& mapNormal);
 		void createBuffers();
-
 	public:
-		vector<Vertex>* getPtr();
 		void initilize();
+		vector<Vertex>* getPtr();
 		void bind();
 		unsigned int getVerticeCount() const;
 
 		SubGrid();
 		~SubGrid();
-
-
-		bool castRay(float3& point, float3& direction);
 	};
 
 	const string m_heightmapPath = "TerrainHeightmap/";
