@@ -81,7 +81,7 @@ private:
 	bool createResourceBuffer(string path, ID3D11ShaderResourceView** buffer);
 
 	void tileRayIntersectionTest(
-		XMINT2 gridIndex, float3 point, float3 direction, float& minL, float3& normal);
+		XMINT2 gridIndex, float3 point, float3 direction, float& minL);
 	float clamp(float val, float min, float max) {
 		return (val < min ? min : val > max ? max : val);
 	}
@@ -98,7 +98,7 @@ public:
 
 	float getHeightFromPosition(float x, float z);
 	float3 getNormalFromPosition(float x, float z);
-	bool castRay(float3& point, float3& direction);
+	float castRay(float3 point, float3 direction);
 
 	void draw();
 

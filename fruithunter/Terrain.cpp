@@ -332,7 +332,7 @@ bool Terrain::createResourceBuffer(string path, ID3D11ShaderResourceView** buffe
 }
 
 void Terrain::tileRayIntersectionTest(
-	XMINT2 gridIndex, float3 point, float3 direction, float& minL, float3& normal) {
+	XMINT2 gridIndex, float3 point, float3 direction, float& minL) {
 	XMINT2 order[6] = { // tri1
 		XMINT2(1, 1), XMINT2(0, 0), XMINT2(0, 1),
 		// tri2
@@ -350,12 +350,10 @@ void Terrain::tileRayIntersectionTest(
 	float t1 = triangleTest(point, direction, triangles[0], triangles[1], triangles[2]);
 	if ((t1 > 0.f) && (minL == -1 || t1 < minL)) {
 		minL = t1;
-		normal = (triangles[1] - triangles[0]).Cross(triangles[2] - triangles[0]);
 	}
 	float t2 = triangleTest(point, direction, triangles[3], triangles[4], triangles[5]);
 	if ((t2 > 0.f) && (minL == -1 || t2 < minL)) {
 		minL = t2;
-		normal = (triangles[4] - triangles[3]).Cross(triangles[5] - triangles[0]);
 	}
 }
 
@@ -517,12 +515,10 @@ float3 Terrain::getNormalFromPosition(float x, float z) {
 	}
 	return float3(0, 0, 0); // outside terrain
 }
-
-bool Terrain::castRay(float3& point, float3& direction) {
-	if (Input::getInstance()->keyDown(Keyboard::K)) {
-		int k = 0;
-		k = 0;
-	}
+/*
+ * Returns scale of direction until collision, point+direction*scale = collisionPoint. '-1' means miss!
+*/
+float Terrain::castRay(float3 point, float3 direction) {
 	// convert to local space
 	float4x4 mTerrainWorld = getModelMatrix();
 	float4x4 mTerrainInvWorld = mTerrainWorld.Invert();
@@ -582,7 +578,6 @@ bool Terrain::castRay(float3& point, float3& direction) {
 		}
 		ts.push_back(0);
 		// check all intersected tiles
-		float3 normal;
 		float minL = -1;
 		for (int i = (int)ts.size() - 2; i >= 0; i--) {
 			float sampledT = (ts[i]+ts[i+1]) / 2.f;
@@ -590,25 +585,20 @@ bool Terrain::castRay(float3& point, float3& direction) {
 				(int)clamp((float)start.x + tilt.x * sampledT, 0, (float)m_gridPointSize.x - 2);
 			int iy =
 				(int)clamp((float)start.y + tilt.y * sampledT, 0, (float)m_gridPointSize.y - 2);
-			tileRayIntersectionTest(XMINT2(ix, iy), startPoint, n, minL, normal);
+			tileRayIntersectionTest(XMINT2(ix, iy), startPoint, n, minL);
 			if (minL != -1)
 				break; // early break
 		}
 		// convert back to world space
 		if (minL != -1) {
 			float3 intersectPoint = startPoint + n * minL;
-			float3 intersectNormal = normal;
 			intersectPoint = float3::Transform(intersectPoint, mTerrainWorld);
-			intersectNormal =
-				float3::Transform(intersectNormal, mTerrainWorld.Invert().Transpose());
-			intersectNormal.Normalize();
 
-			point = intersectPoint;
-			direction = intersectNormal;
-			return true;
+			float l = (intersectPoint - point).Length() / direction.Length();
+			return l;
 		}
 	}
-	return false;
+	return -1;
 }
 
 void Terrain::draw() {
