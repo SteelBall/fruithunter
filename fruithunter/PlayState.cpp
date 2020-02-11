@@ -55,15 +55,16 @@ void PlayState::draw() {
 	m_terrain.draw();
 
 	float3 p = m_player.getPosition();
-	float3 d = m_player.getForward() * 10;
-	d = float3(0,-1,0)*10;
+	float3 d = m_player.getForward() * 15;
 	m_entity.setPosition(p + d);
 	m_entity.draw();
 	float l = m_terrain.castRay(p, d);
-	if (l != -1) {
-		m_entity.setPosition(p+d*l);
-		m_entity.draw();
-	}
+	float3 intersectionPoint = p + d * l;
+	float3 normal = m_terrain.getNormalFromPosition(intersectionPoint.x,intersectionPoint.z);
+	m_entity.setPosition(intersectionPoint);
+	m_entity.draw();
+	m_entity.setPosition(intersectionPoint+normal);
+	m_entity.draw();
 
 	// Text
 	float t = m_timer.getTimePassed();
