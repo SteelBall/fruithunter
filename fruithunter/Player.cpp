@@ -39,7 +39,7 @@ void Player::update(float td, float height, float3 normal) {
 		m_dashCooldown += td; // Cooldown for dashing
 	}
 	m_camera.setUp(m_playerUp);
-	m_camera.setEye(m_position + float3(0, 0.5, 0));
+	m_camera.setEye(m_position);
 	m_camera.setTarget(m_position + m_playerForward);
 
 	m_camera.updateBuffer();

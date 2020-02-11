@@ -332,7 +332,7 @@ bool Terrain::createResourceBuffer(string path, ID3D11ShaderResourceView** buffe
 }
 
 void Terrain::tileRayIntersectionTest(
-	XMINT2 gridIndex, float3 point, float3 direction, float& minL, float3& normal) {
+	XMINT2 gridIndex, float3 point, float3 direction, float& minL) {
 	XMINT2 order[6] = { // tri1
 		XMINT2(1, 1), XMINT2(0, 0), XMINT2(0, 1),
 		// tri2
@@ -350,12 +350,10 @@ void Terrain::tileRayIntersectionTest(
 	float t1 = triangleTest(point, direction, triangles[0], triangles[1], triangles[2]);
 	if ((t1 > 0.f) && (minL == -1 || t1 < minL)) {
 		minL = t1;
-		normal = (triangles[1] - triangles[0]).Cross(triangles[2] - triangles[0]);
 	}
 	float t2 = triangleTest(point, direction, triangles[3], triangles[4], triangles[5]);
 	if ((t2 > 0.f) && (minL == -1 || t2 < minL)) {
 		minL = t2;
-		normal = (triangles[4] - triangles[3]).Cross(triangles[5] - triangles[0]);
 	}
 }
 
@@ -522,7 +520,6 @@ float3 Terrain::getNormalFromPosition(float x, float z) {
 */
 float Terrain::castRay(float3 point, float3 direction) {
 	if (direction.Length() > 0) {
-		direction = float3(0,-1,0);
 		// convert to local space
 		float4x4 mTerrainWorld = getModelMatrix();
 		float4x4 mTerrainInvWorld = mTerrainWorld.Invert();

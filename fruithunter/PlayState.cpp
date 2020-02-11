@@ -30,7 +30,7 @@ void PlayState::update() {
 
 	float3 pos = m_player.getPosition();
 	float h = m_terrain.getHeightFromPosition(pos.x, pos.z);
-	m_player.update(0.017f, h + 0.5f, normal);
+	m_player.update(0.017f, h+0.5, float3(0,0,0));
 	m_timer.update();
 	float dt = m_timer.getDt();
 	m_bow.updateAnimated(dt);
@@ -54,13 +54,16 @@ void PlayState::draw() {
 
 	m_terrain.draw();
 
-	float3 p = m_player.getPosition()+float3(0,0,0);
-	float3 d = m_player.getForward() * 15;
+	float3 p = m_player.getPosition();
+	float3 d = m_player.getForward() * 10;
+	d = float3(0,-1,0)*10;
 	m_entity.setPosition(p + d);
 	m_entity.draw();
-	m_terrain.castRay(p, d);
-	m_entity.setPosition(p);
-	m_entity.draw();
+	float l = m_terrain.castRay(p, d);
+	if (l != -1) {
+		m_entity.setPosition(p+d*l);
+		m_entity.draw();
+	}
 
 	// Text
 	float t = m_timer.getTimePassed();
